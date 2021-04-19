@@ -1,0 +1,52 @@
+version: "3.7"
+services:
+
+  front-envoy:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontenvoy
+    networks:
+      - envoymesh
+    ports:
+      - "8087:8080"
+      - "8001:8001"
+
+  demo-service-1:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service1
+    volumes:
+      - ./demo-service1/service-envoy.yaml:/etc/service-envoy.yaml
+    networks:
+      - envoymesh
+    ports:
+      - "8085:8000"
+    environment:
+      - SERVICE_NAME=1
+  demo-service-2:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service2
+    volumes:
+      - ./demo-service2/service-envoy.yaml:/etc/service-envoy.yaml
+    networks:
+      - envoymesh
+    ports:
+      - "8086:8000"
+    environment:
+      - SERVICE_NAME=2
+  demo-service-3:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service3
+    volumes:
+      - ./demo-service3/service-envoy.yaml:/etc/service-envoy.yaml
+    networks:
+      - envoymesh
+    ports:
+      - "8089:8000"
+    environment:
+      - SERVICE_NAME=3
+
+networks:
+  envoymesh: {}
