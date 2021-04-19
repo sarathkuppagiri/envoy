@@ -22,7 +22,7 @@ static_resources:
                   prefix: "/"
                 route:
                   weighted_clusters:
-                    runtime_key_prefix: routing.traffic_split.helloworld
+                    runtime_key_prefix: routing.traffic_split.demo-service
                     clusters:
                       - name: service1
                         weight: 10
