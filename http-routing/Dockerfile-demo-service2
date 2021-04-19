@@ -1,0 +1,4 @@
+FROM sreddyku/envoy-java-11-alpine:1.18
+ADD demo-service2/service-envoy.yaml /etc
+COPY demo-service2/target/*.jar /app.jar
+ENV APP_NAME=DEMO-SERVICE2
