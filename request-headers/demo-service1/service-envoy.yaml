@@ -35,7 +35,16 @@ static_resources:
                     value: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%'   
                 - header:
                     key: d-local-addr
-                    value: '%DOWNSTREAM_LOCAL_ADDRESS%'   
+                    value: '%DOWNSTREAM_LOCAL_ADDRESS%'  
+                response_headers_to_add:
+                - header:
+                    key: custom-sample-header
+                    value: xxxxx
+                - header:
+                    key: custom-sample-header-1
+                    value: yyyyyy
+                   
+                 
           http_filters:
           - name: envoy.filters.http.router
             typed_config: {}
