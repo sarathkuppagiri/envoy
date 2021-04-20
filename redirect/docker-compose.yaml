@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+
+  front-envoy:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontenvoy
+    networks:
+      - envoymesh
+    ports:
+      - "8087:8080"
+      - "8001:8001"
+
+networks:
+  envoymesh: {}
