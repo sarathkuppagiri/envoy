@@ -15,7 +15,7 @@ public class DemoController {
 
 	}
 	
-	@GetMapping("/")
+	@GetMapping("/healthCheckFail")
 	public ResponseEntity<?> healthCheckFail() {
 		System.out.println("healthCheckFail....");
 		return new ResponseEntity("Error", HttpStatus.SERVICE_UNAVAILABLE);
