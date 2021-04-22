@@ -29,7 +29,7 @@ Requirements:
 
 ### Running Envoy to transcode our service
 
-
+	cd server/grpc-server> mvn clean install -e
     docker-compose up
     
  
