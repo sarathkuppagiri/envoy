@@ -29,7 +29,6 @@ Requirements:
 
 ### Running Envoy to transcode our service
 
-The script start-envoy.sh automates the tasks below for linux and mac:
 
     docker-compose up
     
@@ -37,7 +36,6 @@ The script start-envoy.sh automates the tasks below for linux and mac:
  
 ### Testing the REST API 
   
-1. Create a reservation
 
  curl --location --request POST 'http://localhost:8811/getAddr' \
 --header 'Content-Type: application/json' \
