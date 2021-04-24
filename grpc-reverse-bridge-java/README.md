@@ -21,6 +21,7 @@ Due to being mapped to HTTP/1.1, this filter will only work with unary gRPC call
 
 
 cd grpc-reverse-bridge-java/server/http-server
+
 mvn clean install -e
 
 docker-compose up
