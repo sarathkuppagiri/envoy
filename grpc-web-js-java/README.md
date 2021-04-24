@@ -215,14 +215,14 @@ To generate the protobuf messages and client service stub class from your
 
   	or
 
-  brew install protoc-gen-grpc-web
+>  brew install protoc-gen-grpc-web
 >
 > If you don't already have `protoc` installed, you will have to download it
 > first from [here](https://github.com/protocolbuffers/protobuf/releases).
 
 	or 
 
-  brew install protobuf
+>  brew install protobuf
 
 >
 > Make sure they are both executable and are discoverable from your PATH.
