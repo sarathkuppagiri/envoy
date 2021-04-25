@@ -1,0 +1,8 @@
+---
+domain: apis
+descriptors:
+  - key: destination_cluster
+    rate_limit:
+      unit: minute
+      requests_per_unit: 6
+      

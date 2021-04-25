@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+
+  envoy:
+    image: envoyproxy/envoy-dev:latest
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    environment:
+      loglevel: debug
+    networks:
+      - envoymesh
+    ports:
+      - "10000:10000"
+  demo-service:
+    build:
+      context: demo-service
+      dockerfile: Dockerfile
+    networks:
+      - envoymesh
+    ports:
+      - "9000:9000"
+    environment:
+      - SERVICE_NAME=1
+
+  redis:
+    image: redis
+    networks:
+      - envoymesh
+    ports:
+      - "6379:6379"
+
+  ratelimit:
+    image: envoyproxy/ratelimit:6f5de117
+    networks:
+      - envoymesh
+    command: /bin/ratelimit
+    ports:
+      - 9080:8080
+      - 9081:8081
+      - 6070:6070
+    depends_on:
+      - redis
+    volumes:
+      - ./ratelimit-data:/data
+    environment:
+      - USE_STATSD=false
+      - LOG_LEVEL=debug
+      - REDIS_SOCKET_TYPE=tcp
+      - REDIS_URL=redis:6379
+      - RUNTIME_ROOT=/data
+      - RUNTIME_SUBDIRECTORY=ratelimit
+      - RUNTIME_WATCH_ROOT=false
+
+networks:
+  envoymesh: {}
