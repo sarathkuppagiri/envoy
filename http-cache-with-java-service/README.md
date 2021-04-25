@@ -4,8 +4,11 @@ In this example, we demonstrate how HTTP caching can be utilized in Envoy by usi
 ### Step 1: Start all of our containers
 
  > cd http-cache-with-java-service/demo-service
+ 
  > mvn clean install -e
+ 
  > cd http-cache-with-java-service
+ 
  > docker-compose up
  
 ### Step 2: Test Envoy’s HTTP caching capabilities
