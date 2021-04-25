@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+
+  front-envoy:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontenvoy
+    networks:
+      - envoymesh
+    ports:
+      - "8000:8000"
+
+  demo-service:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service
+    networks:
+      - envoymesh
+    environment:
+      - SERVICE_NAME=1
+
+networks:
+  envoymesh: {}
