@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+
+  proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile-proxy
+    depends_on:
+    - demo-service1
+    - demo-service2
+    ports:
+    - 10000:10000
+    - 19000:19000
+    networks:
+      - envoymesh
+
+  demo-service1:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service1
+    networks:
+      - envoymesh
+    environment:
+      - SERVICE_NAME=1
+  demo-service2:
+    build:
+      context: .
+      dockerfile: Dockerfile-demo-service2
+    networks:
+      - envoymesh
+    environment:
+      - SERVICE_NAME=2
+      
+networks:
+  envoymesh: {}
