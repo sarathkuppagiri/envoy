@@ -25,11 +25,11 @@ curl -s http://localhost:10000
 Response from service1
 ```
 
-#### Step 3: Edit cds.yaml inside the container to update upstream cluster
+### Step 3: Edit cds.yaml inside the container to update upstream cluster
 
 docker-compose exec -T proxy sed -i s/service1/service2/ /var/lib/envoy/cds.yaml
 
-### Step 5: Check Envoy uses updated configuration
+### Step 4: Check Envoy uses updated configuration
 
 ```
 curl -s http://localhost:10000
