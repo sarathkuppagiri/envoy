@@ -12,18 +12,17 @@ Build and start the containers.
 
 This should also start two upstream HTTP servers, demo-service1 and demo-service2.
 
+```
 docker-compose build --pull
-
 docker-compose up -d
-
 docker-compose ps
+```
 
 ### Step 2: Check web response
 
 ```
 curl -s http://localhost:10000
 Response from service1
-
 ```
 
 #### Step 3: Edit cds.yaml inside the container to update upstream cluster
@@ -35,5 +34,4 @@ docker-compose exec -T proxy sed -i s/service1/service2/ /var/lib/envoy/cds.yaml
 ```
 curl -s http://localhost:10000
 Response from service2
-
 ```
