@@ -14,9 +14,11 @@ Extra attributes carried in the discovery API response for each host inform Envo
 ## Building
 ```
 cd dynamic-config-java-cp-eds/demo-service
+mvn clean install -e
 docker build -t demo-service:latest .
 
 cd dynamic-config-java-cp-eds/envoy-java-management-server/V2/envoy-java-management-server
+mvn clean install -e
 docker build -t envoy-java-management-server:latest .
 
 ```

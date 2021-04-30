@@ -7,9 +7,11 @@ It demonstrates how configuration provided to Envoy persists, even when the cont
 ## Building
 ```
 cd dynamic-config-java-cp-ads/demo-service
+mvn clean install -e
 docker build -t demo-service:latest .
 
 cd dynamic-config-java-cp-ads/envoy-java-management-server/
+mvn clean install -e
 docker build -t envoy-java-management-server:latest .
 
 ```
