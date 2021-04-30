@@ -35,6 +35,38 @@ cd dynamic-config-java-cp-eds
 curl -s http://localhost:10000
 ```
 
+The management server could respond to LDS requests with:
+
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.listener.v3.Listener
+  name: sample-listener
+  address:
+    socket_address:
+      address: 127.0.0.1
+      port_value: 10000
+  filter_chains:
+  - filters:
+    - name: envoy.filters.network.http_connection_manager
+      typed_config:
+        "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+        stat_prefix: ingress_http
+        codec_type: AUTO
+        rds:
+          route_config_name: local_route
+          config_source:
+            resource_api_version: V3
+            api_config_source:
+              api_type: GRPC
+              transport_api_version: V3
+              grpc_services:
+                - envoy_grpc:
+                    cluster_name: xds_cluster
+        http_filters:
+        - name: envoy.filters.http.router
+```
+
 The management server could respond to RDS requests with:
 
 ```
