@@ -1,0 +1,49 @@
+node:
+  cluster: test-cluster
+  id: test-id
+
+dynamic_resources:
+  ads_config:
+    api_type: GRPC
+    transport_api_version: V3
+    grpc_services:
+    - envoy_grpc:
+        cluster_name: xds_cluster
+  cds_config:
+    resource_api_version: V3
+    ads: {}
+  lds_config:
+    resource_api_version: V3
+    ads: {}
+
+static_resources:
+  clusters:
+  - name: xds_cluster
+    connect_timeout: 1.5s
+    type: STATIC
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    http2_protocol_options: {}
+    common_http_protocol_options:
+      idle_timeout: { seconds: 300 }
+    upstream_connection_options:
+      tcp_keepalive:
+        keepalive_probes: 2
+        keepalive_time: 30
+        keepalive_interval: 5
+    load_assignment:
+      cluster_name: xds_cluster
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: 127.0.0.1
+                port_value: 12345
+
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 19000
