@@ -40,3 +40,52 @@ cd dynamic-config-java-cp-cds-and-rds
 ```
 curl -s http://localhost:10000
 ```
+The management server could respond to CDS requests with:
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.cluster.v3.Cluster
+  name: some_service
+  connect_timeout: 0.25s
+  lb_policy: ROUND_ROBIN
+  type: EDS
+  eds_cluster_config:
+    eds_config:
+      resource_api_version: V3
+      api_config_source:
+        api_type: GRPC
+        transport_api_version: V3
+        grpc_services:
+          - envoy_grpc:
+              cluster_name: xds_cluster
+```
+The management server could respond to EDS requests with:
+
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment
+  cluster_name: some_service
+  endpoints:
+  - lb_endpoints:
+    - endpoint:
+        address:
+          socket_address:
+            address: 127.0.0.1
+            port_value: 8000
+```
+
+The management server could respond to RDS requests with:
+
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+  name: local_route
+  virtual_hosts:
+  - name: local_service
+    domains: ["*"]
+    routes:
+    - match: { prefix: "/" }
+      route: { cluster: some_service }
+```

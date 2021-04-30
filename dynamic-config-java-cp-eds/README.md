@@ -41,3 +41,19 @@ cd dynamic-config-java-cp-eds
 ```
 curl -s http://localhost:10000
 ```
+
+The management server could respond to EDS requests with:
+
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.endpoint.v3.ClusterLoadAssignment
+  cluster_name: some_service
+  endpoints:
+  - lb_endpoints:
+    - endpoint:
+        address:
+          socket_address:
+            address: 127.0.0.1
+            port_value: 8000
+```

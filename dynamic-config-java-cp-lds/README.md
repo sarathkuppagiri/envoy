@@ -64,3 +64,18 @@ resources:
         - name: envoy.filters.http.router
 
 ```
+
+The management server could respond to RDS requests with:
+
+```
+version_info: "0"
+resources:
+- "@type": type.googleapis.com/envoy.config.route.v3.RouteConfiguration
+  name: local_route
+  virtual_hosts:
+  - name: local_service
+    domains: ["*"]
+    routes:
+    - match: { prefix: "/" }
+      route: { cluster: some_service }
+```
