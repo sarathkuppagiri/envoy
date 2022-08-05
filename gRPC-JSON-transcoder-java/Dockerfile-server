@@ -1,4 +1,4 @@
-FROM envoyproxy/envoy-dev:latest
+FROM envoyproxy/envoy:v1.18-latest
 
 COPY ./server/envoy-proxy.yaml /etc/server-envoy-proxy.yaml
 COPY ./server/address.pb /etc/address.pb
