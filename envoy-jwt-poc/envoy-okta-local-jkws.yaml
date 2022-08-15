@@ -1,0 +1,96 @@
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address: { address: 127.0.0.1, port_value: 9901 }
+
+static_resources:
+  listeners:
+    - name: ingress-http
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 10000 }
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: ingress_http
+                codec_type: AUTO
+                route_config:
+                  name: verify
+                  virtual_hosts:
+                    - name: bff
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: demo-cluster
+                            auto_host_rewrite: true
+                http_filters:
+                  - name: envoy.filters.http.jwt_authn
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                      providers:
+                        okta-provider:
+                          issuer: https://access-test.creditonebank.com/oauth2/default
+                          from_headers:
+                            - name: Authorization
+                              value_prefix: "Bearer "
+                          local_jwks:
+                            inline_string: '{"keys":[{"kty":"RSA","alg":"RS256","kid":"xRGHBySy3hXoG6-xKQEs2Bbd5mW5PEZIxEJRuqp5DeI","use":"sig","e":"AQAB","n":"s2kHTnGqQbzl-Lt1m_scXIegDvZAxtWwdSMNIDJmRfGD-cvYUY52fhsQefZTLxZ9sW9FBrNZxYDsBCjn_1TglWKnkmXxxUiwis2wWPsUUFcV4aQHa0KKqD7vKUVT738g-v634E5mKPPANrdm2_0sc5bAfBvU1L8BoK--87KiaU2AtUieFNMGvwQtoHOdUQV_UdBE9KxsPZbIatLIzMfVPnSOGG4IBHViyZ7Gf-6jJMDUU4RHi1UXQvo5ZMyVjrDU0kGw7JLSUGHoSKQJ36G-9xgtRxklh1LbABnSAPtc6mMoZ2WnyzA7DtQM8sVQ85CAp08w64kAVspNeCzIplCGgQ"}]}'
+                          payload_in_metadata: jwt_payload
+                      rules:
+                        - match:
+                            prefix: /
+                          requires:
+                            provider_name: okta-provider
+                  - name: envoy.filters.http.lua
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                      inline_code: |
+                        function envoy_on_request(request_handle)
+                          local meta = request_handle:streamInfo():dynamicMetadata()
+                          for key, value in pairs(meta) do
+                            request_handle:headers():add("jwt-extracted-user", value.jwt_payload.sub)
+                            request_handle:headers():replace(":path", request_handle:headers():get(":path").."/"..value.jwt_payload.sub, "/healthCheck")
+                          end
+                        end
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+  clusters:
+    - name: demo-cluster
+      connect_timeout: 0.25s
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: demo-cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: localhost
+                      port_value: 9000
+    - name: auth-server-cluster
+      connect_timeout: 0.25s
+      type: LOGICAL_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: auth-server-cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: access-test.creditonebank.com
+                      port_value: 443
+      transport_socket:
+        name: envoy.transport_sockets.tls
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+          allow_renegotiation: true
+          common_tls_context:
+            validation_context:
+              trusted_ca:
+                filename: /Users/sarathkumarreddy/Downloads/certs/access-test-creditonebank-com-chain.pem
