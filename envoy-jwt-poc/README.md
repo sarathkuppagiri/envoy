@@ -7,6 +7,8 @@ The JWT Authentication filter supports to extract the JWT from various locations
 
 The JWT Authentication filter also supports to write the header and payload of the successfully verified JWT to Dynamic State so that later filters could use it to make their own decisions based on the JWT payloads.
 
+## Run instructions
+
 authorization-server> mvn clean install -e 
 authorization-server> mvn spring-boot:run
 
