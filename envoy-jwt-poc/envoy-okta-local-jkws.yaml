@@ -72,25 +72,3 @@ static_resources:
                     socket_address:
                       address: localhost
                       port_value: 9000
-    - name: auth-server-cluster
-      connect_timeout: 0.25s
-      type: LOGICAL_DNS
-      lb_policy: ROUND_ROBIN
-      load_assignment:
-        cluster_name: auth-server-cluster
-        endpoints:
-          - lb_endpoints:
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: access-test.creditonebank.com
-                      port_value: 443
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-          allow_renegotiation: true
-          common_tls_context:
-            validation_context:
-              trusted_ca:
-                filename: /Users/sarathkumarreddy/Downloads/certs/access-test-creditonebank-com-chain.pem
