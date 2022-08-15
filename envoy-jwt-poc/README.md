@@ -4,3 +4,8 @@ The JSON Web Token (JWT) Authentication filter checks if the incoming request ha
 The JWT Authentication filter supports to check the JWT under various conditions of the request, it could be configured to check JWT only on specific paths so that you could allowlist some paths from the JWT authentication, which is useful if a path is accessible publicly and doesn’t require any JWT authentication.
 
 The JWT Authentication filter supports to extract the JWT from various locations of the request and could combine multiple JWT requirements for the same request. The JSON Web Key Set (JWKS) needed for the JWT signature verification could be either specified inline in the filter config or fetched from remote server via HTTP/HTTPS.
+
+The JWT Authentication filter also supports to write the header and payload of the successfully verified JWT to Dynamic State so that later filters could use it to make their own decisions based on the JWT payloads.
+
+mvn clean install -e 
+envoy -c envoy-jwt.yaml
