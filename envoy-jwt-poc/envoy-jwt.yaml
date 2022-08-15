@@ -1,0 +1,90 @@
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address: { address: 127.0.0.1, port_value: 9901 }
+
+static_resources:
+  listeners:
+    - name: ingress-http
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 10000 }
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: ingress_http
+                codec_type: AUTO
+                route_config:
+                  name: verify
+                  virtual_hosts:
+                    - name: bff
+                      domains: ["*"]
+                      routes:
+                        - match:
+                            prefix: "/"
+                          route:
+                            cluster: demo-cluster
+                            auto_host_rewrite: true
+                http_filters:
+                  - name: envoy.filters.http.jwt_authn
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
+                      providers:
+                        okta-provider:
+                          issuer: http://localhost:8083/auth/realms/baeldung
+                          from_headers:
+                            - name: Authorization
+                              value_prefix: "Bearer "
+                          remote_jwks:
+                            http_uri:
+                              uri: http://localhost:8083/auth/realms/baeldung/protocol/openid-connect/certs
+                              cluster: auth-server-cluster
+                              timeout: 3s
+                          payload_in_metadata: jwt_payload
+                      rules:
+                        - match:
+                            prefix: /
+                          requires:
+                            provider_name: okta-provider
+                  - name: envoy.filters.http.lua
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+                      inline_code: |
+                        function envoy_on_request(request_handle)
+                          local meta = request_handle:streamInfo():dynamicMetadata()
+                          for key, value in pairs(meta) do
+                            request_handle:headers():add("jwt-extracted-user", value.jwt_payload.sub)
+                            request_handle:headers():replace(":path", request_handle:headers():get(":path").."/"..value.jwt_payload.sub, "/healthCheck")
+                          end
+                        end
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+  clusters:
+    - name: demo-cluster
+      connect_timeout: 0.25s
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: demo-cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: localhost
+                      port_value: 9000
+    - name: auth-server-cluster
+      connect_timeout: 0.25s
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: auth-server-cluster
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: localhost
+                      port_value: 8083
