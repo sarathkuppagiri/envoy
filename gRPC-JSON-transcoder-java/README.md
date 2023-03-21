@@ -23,7 +23,11 @@ Requirements:
 
 3. extract it somewhere in your PATH
    Run below command
-
+   git clone https://github.com/googleapis/googleapis
+   GOOGLEAPIS_DIR=<your-local-googleapis-folder>
+   
+   Run the protoc command from within this project's root directory! 
+   
    protoc -I$(GOOGLEAPIS_DIR) -I. --include_imports --include_source_info \
     --descriptor_set_out=address.pb /Users/sarathkumarreddy/github/envoy/gRPC-JSON-transcoder-java/server/grpc-server/src/main/proto/CepService.proto
 
