@@ -15,11 +15,11 @@ Requirements:
 
 ### Installing protoc
 1. Goto: https://github.com/protocolbuffers/protobuf/releases/latest" +
-2. download choose the precompiled version " +
+2. download choose the precompiled version " 
 
-       for linux:   protoc-3.6.1-linux-x86_64.zip" +
-       for windows: protoc-3.6.1-win32.zip" +
-       for mac:     protoc-3.6.1-osx-x86_64.zip or brew install protobuf" +
+       for linux:   protoc-3.6.1-linux-x86_64.zip" 
+       for windows: protoc-3.6.1-win32.zip" 
+       for mac:     protoc-3.6.1-osx-x86_64.zip or brew install protobuf" 
 
 3. extract it somewhere in your PATH
    git clone https://github.com/googleapis/googleapis
