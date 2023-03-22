@@ -22,6 +22,8 @@ Requirements:
        for mac:     protoc-3.6.1-osx-x86_64.zip or brew install protobuf" +
 
 3. extract it somewhere in your PATH
+   git clone https://github.com/googleapis/googleapis
+   GOOGLEAPIS_DIR=<your-local-googleapis-folder>
    Run below command
 
    protoc -I$(GOOGLEAPIS_DIR) -I. --include_imports --include_source_info \
@@ -29,24 +31,38 @@ Requirements:
 
 ### Running Envoy to transcode our service
 
-	cd server/grpc-server> mvn clean install -e
+    cd server/grpc-server> mvn clean install -e
     docker-compose up
     
  
  
 ### Testing the REST API 
   
-
- curl --location --request POST 'http://localhost:8811/getAddr' \
---header 'Content-Type: application/json' \
+curl --location --request POST 'http://localhost:8811/upload' \
 --header 'Host: grpc' \
---data-raw '{"cep": "13960000"}'
+--header 'Content-Type: application/json' \
+--data-raw '[
+    {
+        "file": {
+            "content": "base64",
+            "name": "test1",
+            "type": "pdf"
+        }
+    },
+    {
+        "file": {
+            "content": "base64",
+            "name": "test2",
+            "type": "pdf"
+        }
+    }
+]'
         
    Example output:
    
    ```json
     {
-    	"cep": "13960000",
-    	"cidade": "Socorro"
+    	"name": "",
+    	"status": "SUCCESS"
 	}
     ```
